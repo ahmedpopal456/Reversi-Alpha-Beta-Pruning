@@ -4,7 +4,7 @@ import reversi.Othello_Board;
 import reversi.CaptureGridSquare.*;
 import reversi.CaptureGridSquare.Direction.*;
 
-import static reversi.CaptureGridSquare.Direction.BOTTOM;
+import static reversi.CaptureGridSquare.Direction.BOTTOM_DIRECTION;
 
 
 public class Othello_Moves {
@@ -16,52 +16,52 @@ public class Othello_Moves {
 		this.board = board;
 	}
 
-	public int getClosestCellInDirection(final Direction dir, final Othello_Board.Cell cell, final Othello_Board.Player player) // Function returns closest neighbour to a cell, in Direction specified
+	public int getClosestCellInDirection(final Direction dir, final Othello_Board.gridSquare cell, final Othello_Board.Player player) // Function returns closest neighbour to a cell, in Direction specified
 	{
-		if(dir == Direction.TOP || dir == Direction.BOTTOM || dir == Direction.RIGHT|| dir == Direction.LEFT)
+		if(dir == Direction.TOP_DIRECTION || dir == Direction.BOTTOM_DIRECTION || dir == Direction.RIGHT_DIRECTION|| dir == Direction.LEFT_DIRECTION)
 		{
 			int[] Check = {0,0,0,0};
 			Check = this.getXYClosestIndices(cell,player);
 
-			if (dir == Direction.TOP || dir == BOTTOM)
+			if (dir == Direction.TOP_DIRECTION || dir == BOTTOM_DIRECTION)
 			{
 				{
-					if(dir == Direction.TOP)
+					if(dir == Direction.TOP_DIRECTION)
 						return Check[0];
 					else
 						return Check[1];
 				}
 			}
 
-			if (dir == Direction.RIGHT|| dir == Direction.LEFT)
+			if (dir == Direction.RIGHT_DIRECTION|| dir == Direction.LEFT_DIRECTION)
 			{
 				{
-					if(dir == Direction.LEFT)
+					if(dir == Direction.LEFT_DIRECTION)
 						return Check[2];
 					else
 						return Check[3];
 				}
 			}
 		}
-		if(dir == Direction.MAIN_DIAGONAL_BOTTOM || dir == Direction.MAIN_DIAGONAL_TOP || dir == Direction.SECONDARY_DIAGONAL_BOTTOM|| dir == Direction.SECONDARY_DIAGONAL_TOP)
+		if(dir == Direction.MAIN_DIAGONAL_BOTTOM_DIRECTION || dir == Direction.MAIN_DIAGONAL_TOP_DIRECTION || dir == Direction.SECOND_DIAGONAL_BOTTOM_DIRECTION|| dir == Direction.SECOND_DIAGONAL_TOP_DIRECTION)
 		{
 			int[] Check = {0,0,0,0};
 			Check = this.getDiagonalClosestIndices(cell,player);
 
-			if (dir == Direction.MAIN_DIAGONAL_BOTTOM || dir == Direction.MAIN_DIAGONAL_TOP)
+			if (dir == Direction.MAIN_DIAGONAL_BOTTOM_DIRECTION || dir == Direction.MAIN_DIAGONAL_TOP_DIRECTION)
 			{
 				{
-					if(dir == Direction.MAIN_DIAGONAL_TOP)
+					if(dir == Direction.MAIN_DIAGONAL_TOP_DIRECTION)
 						return Check[0];
 					else
 						return Check[1];
 				}
 			}
 
-			if (dir == Direction.SECONDARY_DIAGONAL_BOTTOM|| dir == Direction.SECONDARY_DIAGONAL_TOP)
+			if (dir == Direction.SECOND_DIAGONAL_BOTTOM_DIRECTION|| dir == Direction.SECOND_DIAGONAL_TOP_DIRECTION)
 			{
 				{
-					if(dir == Direction.SECONDARY_DIAGONAL_TOP)
+					if(dir == Direction.SECOND_DIAGONAL_TOP_DIRECTION)
 						return Check[2];
 					else
 						return Check[3];
@@ -77,7 +77,7 @@ public class Othello_Moves {
 
 	public boolean IsIndexAccessible(final int cellIndex, final Othello_Board.Player player) // Function checks whether the defined player can play a move at a specific index of the board
 	{
-		final Othello_Board.Cell cell = board.get(cellIndex);
+		final Othello_Board.gridSquare cell = board.get(cellIndex);
 		boolean lIsIndexAccessible;
 
 		boolean lXAccessible =  Math.max(getClosestIndexinXY(cell, player, false, true,true), getClosestIndexinXY(cell, player, true, true,true)) >= 0;
@@ -93,36 +93,36 @@ public class Othello_Moves {
 
 	/** IS CELL STABLE **/
 
-	private boolean isStable(final Othello_Board.Cell cell, final Othello_Board.Player player)
+	private boolean isStable(final Othello_Board.gridSquare cell, final Othello_Board.Player player)
 	{
 		boolean lNegativeHoriz, lPositiveHoriz, lNegativeVertical, lPositiveVertical;
 		boolean lNegativeSecondary, lPositiveSecondary, lNegativeMain, lPositiveMain;
 
-		final Othello_Board.Player opponent = Othello_Board.Player.getOpponent(player);
+		final Othello_Board.Player opponent = Othello_Board.Player.getMyOpponent(player);
 
-		lNegativeHoriz    =   (getClosestIndexinXY(cell, opponent, true, false, false) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0);
-		lPositiveHoriz    =   (getClosestIndexinXY(cell, opponent, false, false, false) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0)|| (getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0);
-		lNegativeVertical =   (getClosestIndexinXY(cell, opponent, true, false, true) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0);
-		lPositiveVertical =   (getClosestIndexinXY(cell, opponent, false, false, true) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0);
+		lNegativeHoriz    =   (getClosestIndexinXY(cell, opponent, true, false, false) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0);
+		lPositiveHoriz    =   (getClosestIndexinXY(cell, opponent, false, false, false) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0)|| (getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0);
+		lNegativeVertical =   (getClosestIndexinXY(cell, opponent, true, false, true) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0);
+		lPositiveVertical =   (getClosestIndexinXY(cell, opponent, false, false, true) < 0  && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0) || (getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0 && getClosestIndexinXY(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0);
 
 
-		lNegativeSecondary =  getClosestDiagIndex(cell, opponent, true, false,false) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,false) < 0);
-		lPositiveSecondary =  getClosestDiagIndex(cell, opponent, false, false,false) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,false) < 0);
-		lNegativeMain      =  getClosestDiagIndex(cell, opponent, true, false,true) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, true, false,true) < 0);
-		lPositiveMain      =  getClosestDiagIndex(cell, opponent, false, false,true) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.UNKNOWN, false, false,true) < 0);
+		lNegativeSecondary =  getClosestDiagIndex(cell, opponent, true, false,false) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,false) < 0);
+		lPositiveSecondary =  getClosestDiagIndex(cell, opponent, false, false,false) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,false) < 0);
+		lNegativeMain      =  getClosestDiagIndex(cell, opponent, true, false,true) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, true, false,true) < 0);
+		lPositiveMain      =  getClosestDiagIndex(cell, opponent, false, false,true) < 0  && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0 || (getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0 && getClosestDiagIndex(cell, Othello_Board.Player.NO_DISC, false, false,true) < 0);
 
 
 		return ( lNegativeSecondary || lPositiveSecondary ) && ( lNegativeMain || lPositiveMain) && (lNegativeHoriz || lPositiveHoriz) && (lNegativeVertical || lPositiveVertical);
 	}
 
-	public int getNumberOfStableDiscs(final Othello_Board.Player player)  // Return the number of stable discs on the board, for the player
+	public int getNumStableDiscs(final Othello_Board.Player player)  // Return the number of stable discs on the board, for the player
 	{
 		int result = 0;
 		for (int i = 0; i < board.size(); ++i)
 		{
-			final Othello_Board.Cell currentCell = board.get(i);
+			final Othello_Board.gridSquare currentCell = board.get(i);
 
-			if (currentCell.isOwnedBy(player) && (isStable(currentCell, player)))
+			if (currentCell.isSquareOwnedByPlayer(player) && (isStable(currentCell, player)))
 			{
 				++result;
 			}
@@ -130,21 +130,21 @@ public class Othello_Moves {
 		return result;
 	}
 
-	boolean isClosest(final Othello_Board.Player player, int iteration, final Othello_Board.Cell currentCell)
+	boolean isClosest(final Othello_Board.Player player, int iteration, final Othello_Board.gridSquare currentCell)
 	{
-		return currentCell.isOwnedBy(player) && (iteration > 1 || player == Othello_Board.Player.UNKNOWN);
+		return currentCell.isSquareOwnedByPlayer(player) && (iteration > 1 || player == Othello_Board.Player.NO_DISC);
 	}
 
-	boolean isDone(final Othello_Board.Player player, int iteration, final Othello_Board.Cell currentCell) // Has the search ended
+	boolean isDone(final Othello_Board.Player player, int iteration, final Othello_Board.gridSquare currentCell) // Has the search ended
 	{
-		return currentCell.isEmpty() || (currentCell.isOwnedBy(player) && iteration == 1);
+		return currentCell.isEmpty() || (currentCell.isSquareOwnedByPlayer(player) && iteration == 1);
 	}
 
 
 	/**  FUNCTIONS FOR VERTICAL AND HORIZONTAL CHECKS **/
 	//
 
-	public int[] getXYClosestIndices(final Othello_Board.Cell cell, final Othello_Board.Player player) // add bool
+	public int[] getXYClosestIndices(final Othello_Board.gridSquare cell, final Othello_Board.Player player) // add bool
 	{
 		int array[] = {0, 0, 0, 0};
 
@@ -156,7 +156,7 @@ public class Othello_Moves {
 		return array;
 	}
 
-	protected int getClosestIndexinXY(final Othello_Board.Cell cell, final Othello_Board.Player player, final boolean isNegativeDirection, final boolean isStoppingSearch, final boolean isVertical)
+	protected int getClosestIndexinXY(final Othello_Board.gridSquare cell, final Othello_Board.Player player, final boolean isNegativeDirection, final boolean isStoppingSearch, final boolean isVertical)
 	{
 		int cellIndex = cell.getIndex();
 
@@ -164,7 +164,7 @@ public class Othello_Moves {
 		{
 			cellIndex =  isVertical ? (isNegativeDirection ? cellIndex - 8: cellIndex + 8): (isNegativeDirection ? cellIndex - 1 : cellIndex + 1);
 
-			final Othello_Board.Cell currentCell = board.get(cellIndex);
+			final Othello_Board.gridSquare currentCell = board.get(cellIndex);
 
 			if (isClosest(player, i, currentCell))
 				return cellIndex;
@@ -179,7 +179,7 @@ public class Othello_Moves {
 
 	/**  FUNCTIONS FOR CHECKS FOR DIAGONAL  **/
 
-	public int[] getDiagonalClosestIndices(final Othello_Board.Cell cell, final Othello_Board.Player player) // add bool
+	public int[] getDiagonalClosestIndices(final Othello_Board.gridSquare cell, final Othello_Board.Player player) // add bool
 	{
 		int array[] = {0, 0, 0,0};
 
@@ -191,7 +191,7 @@ public class Othello_Moves {
 		return array;
 	}
 
-	protected int getClosestDiagIndex(final Othello_Board.Cell cell, final Othello_Board.Player player, final boolean isNegativeDirection, final boolean isDone, final boolean isMainDiagonal)
+	protected int getClosestDiagIndex(final Othello_Board.gridSquare cell, final Othello_Board.Player player, final boolean isNegativeDirection, final boolean isDone, final boolean isMainDiagonal)
 	{
 		int cellIndex = cell.getIndex();
 		int iteration = 1;
@@ -205,7 +205,7 @@ public class Othello_Moves {
 
 		while (!(isMainDiagonal ? ((cellIndex % 8 == 0 || cellIndex / 8 == 0 || cellIndex % 8 == 7 || cellIndex / 8 == 7) && cellIndex != 56 && cellIndex != 7):((cellIndex % 8 == 0 || cellIndex / 8 == 0 || cellIndex % 8 == 7 || cellIndex / 8 == 7) && cellIndex != 0 && cellIndex != 63)))
 		{
-			final Othello_Board.Cell currentCell = board.get(cellIndex);
+			final Othello_Board.gridSquare currentCell = board.get(cellIndex);
 
 			if (isClosest(player, iteration, currentCell))
 				return cellIndex;
@@ -217,7 +217,7 @@ public class Othello_Moves {
 			++iteration;
 		}
 
-		Othello_Board.Cell currentCell = board.get(cellIndex);
+		Othello_Board.gridSquare currentCell = board.get(cellIndex);
 		return isClosest(player, iteration, currentCell) ? cellIndex : -1;
 	}
 

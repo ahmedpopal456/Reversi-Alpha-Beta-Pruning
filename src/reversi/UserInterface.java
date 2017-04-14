@@ -18,8 +18,8 @@ import reversi.Othello_Board;
 
 public class UserInterface extends JFrame implements OnBoardChangePerception {
 
-	private static final int FRAME_HEIGHT = 600;
-	private static final int FRAME_WIDTH = 558;
+	private static final int OTHELLO_BOARD_HEIGHT = 600;
+	private static final int OTHELLO_BOARD_WIDTH = 558;
 
 	private final BoardLayout boardLayout;
 
@@ -33,7 +33,7 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 		final Container container = getContentPane();
 		container.add(boardLayout, BorderLayout.CENTER);
 
-		setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+		setPreferredSize(new Dimension(OTHELLO_BOARD_WIDTH, OTHELLO_BOARD_HEIGHT));
 
 		pack();
 		setVisible(true);
@@ -46,9 +46,9 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 
 		public enum GridSquare
 		{
-			EMPTY("0x006400"),
-			CAPTURED("0x006400"),
-			HIGHLIGHTED("0xFF0000");
+			EMPTY_SQUARE("0x006400"),
+			TAKEN_SQUARES("0x006400"),
+			OPTION_HIGHLIGHTED_SQUARES("0xFF0000");
 
 			String backgroundColor = "";
 
@@ -71,7 +71,7 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 
 		public BoardGridSquares()
 		{
-			gridsquare = GridSquare.EMPTY;
+			gridsquare = GridSquare.EMPTY_SQUARE;
 			setPreferredSize(new Dimension(100, 100));
 			setVisible(true);
 
@@ -92,38 +92,39 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 			super.paintComponent(graphics);
 			graphics.setColor(gridsquare.getBackgroundColor());
 			graphics.fillRect(1, 1, 70, 70);
-			graphics.drawImage(getCellImage(),1, 1, 70, 70, null);
+			graphics.drawImage(getDiscImageForPlayer(),1, 1, 70, 70, null);
 		}
 
 
-		public void take(final Othello_Board.Player owner)
+		public void takenSquare(final Othello_Board.Player owner)
 		{
 			this.cellOwner = owner;
-			gridsquare = GridSquare.CAPTURED;
+			gridsquare = GridSquare.TAKEN_SQUARES;
 			repaint();
 		}
 
 
 		public void highlight() {
-			gridsquare = GridSquare.HIGHLIGHTED;
+			gridsquare = GridSquare.OPTION_HIGHLIGHTED_SQUARES;
 			repaint();
 		}
 
-		public void clearHighlight() {
-			gridsquare = GridSquare.EMPTY;
+		public void emptySquare() {
+			gridsquare = GridSquare.EMPTY_SQUARE;
 			repaint();
 		}
 
 		@Override
-		public void repaint() {
+		public void repaint()
+		{
 			paintImmediately(0, 0, 100, 100);
 		}
 
-		private Image getCellImage()
+		private Image getDiscImageForPlayer()
 		{
-			if (cellOwner == Othello_Board.Player.WHITE) {
+			if (cellOwner == Othello_Board.Player.WHITE_DISC_PLAYER) {
 				return whiteDiscImage;
-			} else if (cellOwner == Othello_Board.Player.BLACK) {
+			} else if (cellOwner == Othello_Board.Player.BLACK_DISC_PLAYER) {
 				return blackDiscImage;
 			}
 			return null;
@@ -138,17 +139,17 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 		private final Runnable clearHighlightRunnable;
 
 
-		private class CellMouseListener extends MouseAdapter
+		private class SquareMouseClickListener extends MouseAdapter
 		{
 
 			private final int cellIndex;
-			public CellMouseListener(final int index) {
+			public SquareMouseClickListener(final int index) {
 				cellIndex = index;
 			}
 
 			@Override
 			public void mouseClicked(final MouseEvent event) {
-				eventsListener.onCellSelected(cellIndex);
+				eventsListener.onSelectionOfGridSquare(cellIndex);
 			}
 
 		}
@@ -174,7 +175,7 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 
 			@Override
 			public void run() {
-				cellLayout.take(player);
+				cellLayout.takenSquare(player);
 			}
 		}
 
@@ -208,19 +209,19 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 		}
 
 
-		public void onModelChanged(final Collection<Othello_Board.Cell> changedCells)  // Listener callback, runs when the model perceives a change
+		public void onModelChanged(final Collection<Othello_Board.gridSquare> changedCells)  // Listener callback, runs when the model perceives a change
 		{
-			for (final Othello_Board.Cell cell : changedCells)
+			for (final Othello_Board.gridSquare cell : changedCells)
 			{
-				SwingUtilities.invokeLater(new BoardLayout.TakeCellRunnable(getCellAt(cell.getIndex()), cell.getOwner()));
+				SwingUtilities.invokeLater(new BoardLayout.TakeCellRunnable(getCellAt(cell.getIndex()), cell.getOwnerOfCell()));
 			}
 		}
 
-		public void onNextMovesAcquired(final Collection<Othello_Board.Cell> nextMoves) // After the set of possible moves have been evaluated, this function is called to highlight or clear different cells
+		public void onOccuranceOfNextMove(final Collection<Othello_Board.gridSquare> nextMoves) // After the set of possible moves have been evaluated, this function is called to highlight or clear different cells
 		{
 			SwingUtilities.invokeLater(clearHighlightRunnable); // Clears the cells
 
-			for (final Othello_Board.Cell cell : nextMoves)
+			for (final Othello_Board.gridSquare cell : nextMoves)
 			{
 				SwingUtilities.invokeLater(new BoardLayout.HighlightCellRunnable(getCellAt(cell.getIndex())));
 			}
@@ -231,7 +232,7 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 			for (int i = 0; i < getComponentCount(); ++i)
 			{
 				final BoardGridSquares boardCellLayout = (BoardGridSquares) getComponent(i);
-				boardCellLayout.clearHighlight();
+				boardCellLayout.emptySquare();
 			}
 		}
 
@@ -256,32 +257,32 @@ public class UserInterface extends JFrame implements OnBoardChangePerception {
 					final int cellIndex = i * 8 + j;
 
 					add(currentCell, cellIndex);
-					currentCell.addMouseListener(new BoardLayout.CellMouseListener(cellIndex));
+					currentCell.addMouseListener(new BoardLayout.SquareMouseClickListener(cellIndex));
 				}
 			}
 		}
 	}
 
 	@Override
-	public void onBoardChanged(Collection<Othello_Board.Cell> changedCells) {
+	public void onChangeInBoard(Collection<Othello_Board.gridSquare> changedCells) {
 		boardLayout.onModelChanged(changedCells);
 	}
 
 
 	@Override
-	public void onNextMovesAcquired(Collection<Othello_Board.Cell> nextMoves)
+	public void onOccuranceOfNextMove(Collection<Othello_Board.gridSquare> nextMoves)
 	{
-		boardLayout.onNextMovesAcquired(nextMoves);
+		boardLayout.onOccuranceOfNextMove(nextMoves);
 	}
 
 	@Override
-	public void onResultChanged(int whiteDiscs, int blackDiscs)
+	public void onChangeInDiscResults(int whiteDiscs, int blackDiscs)
 	{
 	  System.out.println("White Score:" + whiteDiscs);
 	  System.out.println("Black Score:" + blackDiscs);
 	}
 
-	public void endGame()
+	public void endOthelloGame()
 	{
 		boardLayout.clearCellHighlight();
 	}

@@ -5,7 +5,7 @@ import reversi.Othello_Board;
 
 public interface OnBoardChangePerception
 {
-	void onBoardChanged(final Collection<Othello_Board.Cell> changedCells);
-	void onResultChanged(final int whiteDiscs, final int blackDiscs);
-	void onNextMovesAcquired(final Collection<Othello_Board.Cell> nextMoves);
+	void onChangeInBoard(final Collection<Othello_Board.gridSquare> changedCells);
+	void onChangeInDiscResults(final int whiteDiscs, final int blackDiscs);
+	void onOccuranceOfNextMove(final Collection<Othello_Board.gridSquare> nextMoves);
 }

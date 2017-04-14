@@ -17,22 +17,22 @@ public class Othello_Game implements OnPlayerInteraction
 		gameLayout = new UserInterface(this);
 		board = new Othello_Board(searchType);
 
-		currentPlayer = Othello_Board.Player.BLACK;
+		currentPlayer = Othello_Board.Player.BLACK_DISC_PLAYER;
 
 		board.addObserver(gameLayout);
-		board.startGame();
+		board.startOthelloGame();
 		
 		reversiSolver = new Othello_Minimax_Greedy_Solver();
 	}
 
 	public boolean IsTerminalState()
 	{
-		if(!board.hasNextMove(Othello_Board.Player.WHITE) && !board.hasNextMove(Othello_Board.Player.BLACK))
+		if(!board.hasNextLegalMove(Othello_Board.Player.WHITE_DISC_PLAYER) && !board.hasNextLegalMove(Othello_Board.Player.BLACK_DISC_PLAYER))
 		{
-			final int whiteDiscs = board.getDiscCount(Othello_Board.Player.WHITE);
-			final int blackDiscs = board.getDiscCount(Othello_Board.Player.BLACK);
+			final int whiteDiscs = board.getDiscCountOnBoard(Othello_Board.Player.WHITE_DISC_PLAYER);
+			final int blackDiscs = board.getDiscCountOnBoard(Othello_Board.Player.BLACK_DISC_PLAYER);
 
-			gameLayout.endGame();
+			gameLayout.endOthelloGame();
 
 			if(whiteDiscs > blackDiscs)
 				System.out.println("White Player Wins the Match with " + whiteDiscs + " White Discs");
@@ -48,58 +48,58 @@ public class Othello_Game implements OnPlayerInteraction
 
 	public void waitForPlayerInput()    // Awaits player input, after which it updated the board, UI, etc
 	{
-		currentPlayer = Othello_Board.Player.BLACK;
+		currentPlayer = Othello_Board.Player.BLACK_DISC_PLAYER;
 
-		if (board.hasNextMove(currentPlayer))
+		if (board.hasNextLegalMove(currentPlayer))
 		{
 			board.setOfPossibleMoves(currentPlayer);
 
-			board.turnSwitcher.startTurn();
+			board.turnSwapper.startPlayersTurn();
 		}
 	}
 
 
 	public void SecondPlayerAIMove(int depthLevel)   // Makes the next move on the behalf of the AI
 	{
-		currentPlayer = Othello_Board.Player.WHITE;
+		currentPlayer = Othello_Board.Player.WHITE_DISC_PLAYER;
 
-		if(board.hasNextMove(currentPlayer))
+		if(board.hasNextLegalMove(currentPlayer))
 		{
 			board.setOfPossibleMoves(currentPlayer); // Find the possible moves and highlight them on the board
 
 			reversiSolver.getMiniMaxOrGreedyMove(board, this, board.getSearchType(),currentPlayer,depthLevel);
 
-			board.turnSwitcher.startTurn();
+			board.turnSwapper.startPlayersTurn();
 		}
 	}
 
 	public void FirstPlayerAIMove(int depthLevel)   // Makes the next move on the behalf of the AI
 	{
-		currentPlayer = Othello_Board.Player.BLACK;
+		currentPlayer = Othello_Board.Player.BLACK_DISC_PLAYER;
 
-		if(board.hasNextMove(currentPlayer))
+		if(board.hasNextLegalMove(currentPlayer))
 		{
 			board.setOfPossibleMoves(currentPlayer); // Find the possible moves and highlight them on the board
 			reversiSolver.getMiniMaxOrGreedyMove(board, this, board.getSearchType(),currentPlayer,depthLevel);
-			board.turnSwitcher.startTurn();
+			board.turnSwapper.startPlayersTurn();
 		}
 	}
 
 
 	@Override
-	public void onCellSelected(final int cellIndex)
+	public void onSelectionOfGridSquare(final int cellIndex)
 	{
-		if (board.isMovePermitted(cellIndex, currentPlayer) && currentPlayer == Othello_Board.Player.BLACK)
+		if (board.isMovePermitted(cellIndex, currentPlayer) && currentPlayer == Othello_Board.Player.BLACK_DISC_PLAYER)
 		{
 			board.takeCell(cellIndex, currentPlayer);
-			board.turnSwitcher.endTurn();
+			board.turnSwapper.endPlayersTurn();
 		}
 	}
 
 	@Override
-	public synchronized void onOptimalMoveReceived(Collection<Othello_Board.Cell> optimalMove)
+	public synchronized void onBestMoveAcquired(Collection<Othello_Board.gridSquare> optimalMove)
 	{
-		board.takeCells(optimalMove);
-		board.turnSwitcher.endTurn();
+		board.acquireGridSquare(optimalMove);
+		board.turnSwapper.endPlayersTurn();
 	}
 }

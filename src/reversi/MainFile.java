@@ -56,9 +56,13 @@ public class MainFile
 		}
 		} while (!isCheck);
 
+		float lStartTime, lEndTime;
+
 
 		final Othello_Game Othello_Manager = new Othello_Game(isSearchAlgorithmMinMax);
 		lGenerateOutputFile(Othello_Manager.board, "Initial State",isPlayervsAI,isSearchAlgorithmMinMax,timeStamp);
+
+		lStartTime = System.nanoTime();
 
 		if(!isPlayervsAI)
 		{
@@ -82,6 +86,10 @@ public class MainFile
 				lGenerateOutputFile(Othello_Manager.board, "White Move",isPlayervsAI,isSearchAlgorithmMinMax,timeStamp);
 			}
 		}
+
+		lEndTime = System.nanoTime();
+
+		System.out.println(lEndTime - lStartTime);
 	}
 
 	public static void lGenerateOutputFile(Othello_Board othello_board, String player,boolean isPlayervsAI, boolean isSearchAlgorithmMinMax,  String timestamp)
@@ -92,8 +100,8 @@ public class MainFile
 
 		for (int i = 0; i < 64; i++)
 		{
-			boolean isBlack = othello_board.get(i).isOwnedBy(Othello_Board.Player.BLACK);
-			boolean isWhite = othello_board.get(i).isOwnedBy(Othello_Board.Player.WHITE);
+			boolean isBlack = othello_board.get(i).isSquareOwnedByPlayer(Othello_Board.Player.BLACK_DISC_PLAYER);
+			boolean isWhite = othello_board.get(i).isSquareOwnedByPlayer(Othello_Board.Player.WHITE_DISC_PLAYER);
 
 			if (isBlack)
 				lChar[i] = "B".toString().charAt(0);

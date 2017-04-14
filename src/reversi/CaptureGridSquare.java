@@ -13,60 +13,60 @@ public class CaptureGridSquare
 	public enum Direction
 	{
 
-		LEFT(1), RIGHT(1), TOP(8), BOTTOM(8), MAIN_DIAGONAL_TOP(8
-			+ 1), MAIN_DIAGONAL_BOTTOM(8 + 1), SECONDARY_DIAGONAL_TOP(8 - 1), SECONDARY_DIAGONAL_BOTTOM(8 - 1);
+		LEFT_DIRECTION(1), RIGHT_DIRECTION(1), TOP_DIRECTION(8), BOTTOM_DIRECTION(8), MAIN_DIAGONAL_TOP_DIRECTION(8
+			+ 1), MAIN_DIAGONAL_BOTTOM_DIRECTION(8 + 1), SECOND_DIAGONAL_TOP_DIRECTION(8 - 1), SECOND_DIAGONAL_BOTTOM_DIRECTION(8 - 1);
 
-		private final int increment;
+		private final int directionalValue;
 
-		Direction(final int increment)
+		Direction(final int directionalValue)
 		{
-			this.increment = increment;
+			this.directionalValue = directionalValue;
 		}
 
-		public int getIncrement() // Returns the cell number with which a cell index is to be incremented in order to move in the direction specified
+		public int getDirectionalValue() // Returns the cell number with which a cell index is to be incremented in order to move in the direction specified
 		 {
-			return increment;
+			return directionalValue;
 		}
 	}
 
-	private final Othello_Moves checker;
+	private final Othello_Moves checkMoves;
 
-	private final Othello_Board board;
+	private final Othello_Board othelloBoard;
 
 
-	public CaptureGridSquare(final Othello_Moves checker, final Othello_Board board) // Create an object
+	public CaptureGridSquare(final Othello_Moves checkMoves, final Othello_Board othelloBoard) // Create an object
 	{
-		this.checker = checker;
-		this.board = board;
+		this.checkMoves = checkMoves;
+		this.othelloBoard = othelloBoard;
 	}
 
-	public Set<Othello_Board.Cell> captureGridSquare(final int cellIndex, final Othello_Board.Player player) // Takes the cell specified and all the other cells that are affected
+	public Set<Othello_Board.gridSquare> captureGridSquare(final int gridSquareIndex, final Othello_Board.Player player) // Takes the cell specified and all the other cells that are affected
 	{
-		final Set<Othello_Board.Cell> takenCells = new LinkedHashSet<Othello_Board.Cell>();
+		final Set<Othello_Board.gridSquare> capturedGridSquares = new LinkedHashSet<Othello_Board.gridSquare>();
 
-		takenCells.add(board.get(cellIndex));
+		capturedGridSquares.add(othelloBoard.get(gridSquareIndex));
 
 		for (final Direction direction : Direction.values())
 		{
-			final int neighbourIndex = checker.getClosestCellInDirection(direction, board.get(cellIndex), player);
-			final int startIndex = Math.min(board.get(cellIndex).getIndex(), neighbourIndex);
-			final int endIndex = Math.max(board.get(cellIndex).getIndex(), neighbourIndex);
+			final int closestNeighbouringIndex = checkMoves.getClosestCellInDirection(direction, othelloBoard.get(gridSquareIndex), player);
+			final int intialIndex = Math.min(othelloBoard.get(gridSquareIndex).getIndex(), closestNeighbouringIndex);
+			final int finalIndex = Math.max(othelloBoard.get(gridSquareIndex).getIndex(), closestNeighbouringIndex);
 
-			final Set<Othello_Board.Cell> result = new HashSet<Othello_Board.Cell>();
+			final Set<Othello_Board.gridSquare> result = new HashSet<Othello_Board.gridSquare>();
 
-			for (int i = startIndex; i <= endIndex; i += direction.getIncrement())
+			for (int i = intialIndex; i <= finalIndex; i += direction.getDirectionalValue())
 			{
-				result.add(board.get(i));
+				result.add(othelloBoard.get(i));
 			}
 
-			takenCells.addAll(neighbourIndex >= 0 ? result : Collections.<Othello_Board.Cell> emptySet());
+			capturedGridSquares.addAll(closestNeighbouringIndex >= 0 ? result : Collections.<Othello_Board.gridSquare> emptySet());
 		}
 
-		for (final Othello_Board.Cell takenCell : takenCells)
+		for (final Othello_Board.gridSquare capturedGridSquare : capturedGridSquares)
 		{
-			takenCell.take(player);
+			capturedGridSquare.takenSquare(player);
 		}
 
-		return takenCells;
+		return capturedGridSquares;
 	}
 }

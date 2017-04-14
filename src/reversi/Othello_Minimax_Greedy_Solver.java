@@ -28,7 +28,7 @@ public class Othello_Minimax_Greedy_Solver {
 			this.board = parameter.board;
 		}
 
-		public Collection<Othello_Board.Cell> getDifference(final Othello_Board other) // Gets the difference between the board in this move and the <tt>other</tt>  board given.
+		public Collection<Othello_Board.gridSquare> getDifference(final Othello_Board other) // Gets the difference between the board in this move and the <tt>other</tt>  board given.
 		{
 			return board.getDifference(other);
 		}
@@ -76,9 +76,9 @@ public class Othello_Minimax_Greedy_Solver {
 			this.level = level;
 		}
 
-		public Collection<Othello_Board> getNextBoards(final Othello_Board.Player player)// 	 * Returns all the next possible board configurations for the
+		public Collection<Othello_Board> getPossibleNextBoards(final Othello_Board.Player player)// 	 * Returns all the next possible board configurations for the
 		{
-			return board.getNextBoards(player);
+			return board.getPossibleNextBoards(player);
 		}
 
 
@@ -116,25 +116,25 @@ public class Othello_Minimax_Greedy_Solver {
 				if (searchType == true)   // MINIMAX ALGORITHM for White Player
 				{
 					GameMove result = getOptimalMinMoveOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0),depthLevel);
-					callback.onOptimalMoveReceived(result.getDifference(board));
+					callback.onBestMoveAcquired(result.getDifference(board));
 				}
 				else                   //  GREEDY ALGORITHM for White Player
 				{
 					GameMove result = getOptimalMinMoveOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0), 1);
-					callback.onOptimalMoveReceived(result.getDifference(board));
+					callback.onBestMoveAcquired(result.getDifference(board));
 				}
 			}
 			else if(player.getSign() == 1)
 			{
 				if (searchType == true)   // MINIMAX ALGORITHM for Black Player
 				{
-					GameMove result = getOptimalMaxMoveOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0),depthLevel);
-					callback.onOptimalMoveReceived(result.getDifference(board));
+					GameMove result = getBestMinMaxOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0),depthLevel);
+					callback.onBestMoveAcquired(result.getDifference(board));
 				}
 				else                   //  GREEDY ALGORITHM for White Player
 				{
-					GameMove result = getOptimalMaxMoveOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0),1);
-					callback.onOptimalMoveReceived(result.getDifference(board));
+					GameMove result = getBestMinMaxOrGreedyMove(new GameSolverParameter(board, Integer.MIN_VALUE, Integer.MAX_VALUE,0),1);
+					callback.onBestMoveAcquired(result.getDifference(board));
 				}
 			}
 		}
@@ -156,15 +156,15 @@ public class Othello_Minimax_Greedy_Solver {
 	{
 		if (parameter.level == depthLevel )
 		{
-			return new GameMove(parameter, Othello_Board.Player.WHITE);  // Heuristic Value for AI
+			return new GameMove(parameter, Othello_Board.Player.WHITE_DISC_PLAYER);  // Heuristic Value for AI
 		}
 
-		final Collection<Othello_Board> gameStates = parameter.getNextBoards(Othello_Board.Player.WHITE); // List of Game States that we can go to next
+		final Collection<Othello_Board> gameStates = parameter.getPossibleNextBoards(Othello_Board.Player.WHITE_DISC_PLAYER); // List of Game States that we can go to next
 		GameMove nextMove = new GameMove(Integer.MAX_VALUE, parameter.board);
 
 		for (final Othello_Board nextState : gameStates) {
 			final GameSolverParameter nextParameter = parameter.increasedLevel(nextState, parameter);
-			final GameMove optimalMove = getOptimalMaxMoveOrGreedyMove(nextParameter,depthLevel);
+			final GameMove optimalMove = getBestMinMaxOrGreedyMove(nextParameter,depthLevel);
 
 			if (((nextMove.value == optimalMove.value) ? 0 : (nextMove.value > optimalMove.value ? 1 : -1)) >= 0) {
 				final int nextValue = optimalMove.getValue();
@@ -179,14 +179,14 @@ public class Othello_Minimax_Greedy_Solver {
 		return nextMove;
 	}
 
-	private GameMove getOptimalMaxMoveOrGreedyMove(final GameSolverParameter parameter, int depthLevel)
+	private GameMove getBestMinMaxOrGreedyMove(final GameSolverParameter parameter, int depthLevel)
 	{
 		if (parameter.level == depthLevel)
 		{
-			return new GameMove(parameter, Othello_Board.Player.BLACK);  // Heuristic Value for MAX
+			return new GameMove(parameter, Othello_Board.Player.BLACK_DISC_PLAYER);  // Heuristic Value for MAX
 		}
 
-		final Collection<Othello_Board> gameStates = parameter.getNextBoards(Othello_Board.Player.BLACK);
+		final Collection<Othello_Board> gameStates = parameter.getPossibleNextBoards(Othello_Board.Player.BLACK_DISC_PLAYER);
 		GameMove nextMove = new GameMove(Integer.MIN_VALUE, parameter.board);
 
 		for (final Othello_Board nextState : gameStates)
